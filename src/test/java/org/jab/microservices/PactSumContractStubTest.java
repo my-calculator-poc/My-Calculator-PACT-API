@@ -9,10 +9,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -22,14 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -52,22 +46,10 @@ public class PactSumContractStubTest {
     static class TestConfig {
 
         @Bean
-        RestTemplateBuilder getRestTemplateBuilder() {
-
-            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-            converter.setSupportedMediaTypes(Arrays.asList(new MediaType[]{
-                            MediaType.APPLICATION_JSON,
-                            MediaType.APPLICATION_OCTET_STREAM}));
-
-            List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-            messageConverters.add(converter);
-            return new RestTemplateBuilder().additionalMessageConverters(messageConverters);
+        TestRestTemplate getTestRestTemplate() {
+            return new TestRestTemplate();
         }
 
-        @Bean
-        TestRestTemplate getTestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-            return new TestRestTemplate(restTemplateBuilder);
-        }
     }
 
     @Rule
@@ -98,7 +80,7 @@ public class PactSumContractStubTest {
                 .headers(headers)
                 .body("{ \"number1\": 1, \"number2\": 4 }")
                 //.body(readFile("request_sum_200.json"))
-                .willRespondWith().status(200).body("5")
+                .willRespondWith().status(200).headers(headers).body("5")
 
                 /*
                 .given("test sum POST without Request body")
