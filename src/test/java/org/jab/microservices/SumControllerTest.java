@@ -41,8 +41,6 @@ public class SumControllerTest {
         wireMockServer.stop();
     }
 
-
-
     @Test
     public void given_SumWithPostAndFormData_whenMockMVC_thenResponseOKResult() throws Exception  {
 
